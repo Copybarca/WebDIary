@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<div class="div-text-left">
+<h5 class="center">List of Clients</h5>
+<div th:each="topic: ${TopicsList}" class = div-index-list>
+
+    <p th:text="'Title: ' + ${topic.getTitle()}" class = text-list>Title</p>
+
+</div>
+<form  action="topics/new">
+    <button type="submit" class="button">Add new topic</button>
+</form>
+</div>
+
+</body>
+</html>

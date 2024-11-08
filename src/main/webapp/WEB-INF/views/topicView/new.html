@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div class="div-text-left">
+    <form th:method="POST" th:action="@{/topics}" th:object="${topic}">
+
+        <div style="margin-bottom: 2px">
+            <label for="title">Enter name</label>
+        </div>
+        <div style="margin-bottom: 10px">
+            <input type="text" th:field="*{title}" id="title" class="form-input">
+        </div>
+
+        <button type="submit" class="button">Add new  client</button>
+
+    </form>
+    <form  th:method="GET" th:action="@{/clients}">
+        <button type="submit" class="button">Back to list</button>
+    </form>
+</div>
+</body>
+</html>
