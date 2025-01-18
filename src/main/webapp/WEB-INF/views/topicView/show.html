@@ -40,19 +40,24 @@
         <div class="data-layout-selected u-clearfix u-expanded-width u-layout-wrap u-layout-wrap-1">
           <div class="u-layout">
             <div class="u-layout-row">
-                <div class="u-container-style u-layout-cell u-size-30 u-layout-cell-2">
+              <div class="u-container-style u-layout-cell u-size-30 u-layout-cell-1">
+
+                <div class="u-container-layout u-container-layout-1">
                     <div class="u-container-layout u-container-layout-2">
-                        <div class="u-container-layout u-container-layout-2">
-                            <p th:text="'Notes without topic\'s: '" class = text-list>name</p>
-                            <div th:each="note: ${notesWithoutTopicsList}" class = div-index-list>
-                                <p th:text="'Title: ' + ${note.getDescription()}" class = text-list>name</p>
-                                <form  th:action="@{/topics/{id}(id=${note.getId()})}">
-                                    <button type="submit" class="button text-list">Edit(In develop this time)</button>
-                                </form>
-                            </div>
+                        <p th:text="'Topic\'s title: ' + ${topic.getTitle()}" class = text-list>name</p>
+                        <div th:each="note: ${notesList}" class = div-index-list>
+                            <p th:text="'Description: ' + ${note.getDescription()}" class = text-list>description</p>
+                            <form th:method="POST" th:action="@{/topics/notes/delete/{id}/{top_id}(id=${note.getId()}, top_id=${topic.getId()})}">
+                                <button type="submit" class="button text-list">Delete</button>
+                            </form>
                         </div>
+                        <form  th:action="@{/topics}">
+                            <button type="submit" class="button text-list div-text-left">Back</button>
+                        </form>
                     </div>
-                </div>
+
+              </div>
+              </div>
             </div>
           </div>
         </div>

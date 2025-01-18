@@ -1,10 +1,7 @@
 package org.diary.dao;
 
 import jakarta.persistence.TypedQuery;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.ParameterExpression;
-import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.*;
 import org.diary.model.Note;
 import org.diary.model.Topic;
 import org.hibernate.HibernateException;
@@ -27,19 +24,26 @@ public class NoteDaoImpl implements CrudDAONote{
         this.topic = topic;
     }
     @Override
-    public void update(int id, Object object) {
-
-    }
-
-    @Override
-    public void delete(int id) {
-
+    public void delete(Long id) {
+        try{
+            session = sessionFactory.getCurrentSession();
+            session.beginTransaction();
+            CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+            CriteriaDelete<Note> delete = criteriaBuilder.createCriteriaDelete(Note.class);
+            Root<Note> rootEntry = delete.from(Note.class);
+            delete.where(criteriaBuilder.equal(rootEntry.get("id"),id));
+            session.createQuery(delete).executeUpdate();
+            session.getTransaction().commit();
+        }catch (HibernateException e){
+            e.printStackTrace();//TODO: тут нужно добавить сквозную логику логирования через аспекты Spring для каждого исключения всех DAO методов
+        }finally {
+            session.close();
+        }
     }
 
     @Override
     public List<?> index() {
         List<Note> list = null;
-
         try{
             session = sessionFactory.getCurrentSession();
             session.beginTransaction();
@@ -53,13 +57,13 @@ public class NoteDaoImpl implements CrudDAONote{
 
             session.getTransaction().commit();
         }catch (HibernateException e){
-            e.printStackTrace();
+            e.printStackTrace();//TODO: тут нужно добавить сквозную логику логирования через аспекты Spring для каждого исключения всех DAO методов
         }finally {
             session.close();
         }
         return list;
     }
-    public List<Note> indexByTopicsId(Integer topicId){// вытягивает из бд все объекы данного типа
+    public List<Note> indexByTopicsId(Long topicId){// вытягивает из бд все объекы у которых единый топик
         List<Note> list= null;
 
         try{
@@ -69,10 +73,7 @@ public class NoteDaoImpl implements CrudDAONote{
             CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
             CriteriaQuery<Note> criteriaQuery = criteriaBuilder.createQuery(Note.class);
             Root<Note> rootEntry = criteriaQuery.from(Note.class);
-
-            ParameterExpression<Integer> param = criteriaBuilder.parameter(Integer.class);
-
-            CriteriaQuery<Note> all = criteriaQuery.select(rootEntry).where(criteriaBuilder.equal(rootEntry.get("topic_id"),topicId));
+            CriteriaQuery<Note> all = criteriaQuery.select(rootEntry).where(criteriaBuilder.equal(rootEntry.get("topic").get("id"),topicId));
             TypedQuery<Note> allQuery = session.createQuery(all);
             list = allQuery.getResultList();
 
@@ -87,8 +88,20 @@ public class NoteDaoImpl implements CrudDAONote{
     }
 
     @Override
-    public Object show(int id) {
-        return null;
+    public Note show(Long id) {
+        Note note = null;
+        try{
+            session = sessionFactory.getCurrentSession();
+            session.beginTransaction();
+            note = session.get(Note.class, id);
+            session.getTransaction().commit();
+
+        }catch(HibernateException e){
+            e.printStackTrace();
+        }finally {
+            session.close();
+        }
+        return note;
     }
 
     @Override
@@ -104,5 +117,42 @@ public class NoteDaoImpl implements CrudDAONote{
         }finally {
             session.close();
         }
+    }
+
+    @Override
+    public void update(Long id, Note note) {
+        try{
+            session = sessionFactory.getCurrentSession();
+            session.beginTransaction();
+            Note noteToUpdate =session.get(Note.class, id);
+            noteToUpdate.setDescription(topic.getTitle());
+            session.getTransaction().commit();
+        }catch(HibernateException e){
+            e.printStackTrace();
+        }finally {
+            session.close();
+        }
+    }
+
+    public List<Note> indexNoteWithoutTopic(){
+        List<Note> list= null;
+        try{
+            session = sessionFactory.getCurrentSession();
+            session.beginTransaction();
+
+            CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+            CriteriaQuery<Note> criteriaQuery = criteriaBuilder.createQuery(Note.class);
+            Root<Note> rootEntry = criteriaQuery.from(Note.class);
+            CriteriaQuery<Note> all = criteriaQuery.select(rootEntry).where(criteriaBuilder.isNull(rootEntry.get("topic").get("id")));
+            TypedQuery<Note> allQuery = session.createQuery(all);
+            list = allQuery.getResultList();
+
+            session.getTransaction().commit();
+        }catch(HibernateException e){
+            e.printStackTrace();
+        }finally {
+            session.close();
+        }
+        return list;
     }
 }

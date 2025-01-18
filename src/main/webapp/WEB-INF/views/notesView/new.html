@@ -6,19 +6,19 @@
 </head>
 <body>
 <div class="div-text-left">
-    <form th:method="POST" th:action="@{/topics}" th:object="${topic}">
+    <form th:method="POST" th:action="@{/topics/notes}" th:object="${note}">
 
         <div style="margin-bottom: 2px">
             <label for="title">Enter name</label>
         </div>
         <div style="margin-bottom: 10px">
-            <input type="text" th:field="*{title}" id="title" class="form-input">
+            <input type="text" th:field="*{topic}" id="title" class="form-input">
         </div>
 
         <button type="submit" class="button">Add new  client</button>
 
     </form>
-    <form  th:method="GET" th:action="@{/clients}">
+    <form  th:method="GET" th:action="@{/topics}">
         <button type="submit" class="button">Back to list</button>
     </form>
 </div>

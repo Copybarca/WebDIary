@@ -6,10 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
@@ -31,7 +28,7 @@ public class NoteController {
     }
 
     @GetMapping("/new")
-    public String newTopic(Model model){
+    public String newNote(Model model){
         model.addAttribute("note",new Note());
         return"notesView/new";
     }
@@ -42,5 +39,10 @@ public class NoteController {
         }
         noteDaoImpl.create(note);
         return"redirect:/topics/notes";
+    }
+    @PostMapping("/delete/{id}/{top_id}")
+    public String delete(@PathVariable("id") Long id,@PathVariable("top_id") Long top_id){
+        noteDaoImpl.delete(id);
+        return"redirect:/topics/"+top_id;
     }
 }

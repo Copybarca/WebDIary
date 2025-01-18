@@ -14,12 +14,12 @@ public class Topic {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    public Long id;
     @Column
     private String title;
     //orphanRemoval = true удаляет записку из базы и записка больше не выводится. если false, записка в базе останется, но её внешний ключ будет null
-    @OneToMany(mappedBy="topic", cascade = CascadeType.ALL, orphanRemoval = true) // MappedBy указывает гланую сущность, cascade указывает операции каскадного изменения для дочерних объектов
-    private  List<Note> noteList = new ArrayList<>();
+    @OneToMany(mappedBy="topic", fetch=FetchType.LAZY, cascade = CascadeType.ALL) // MappedBy указывает гланую сущность, cascade указывает операции каскадного изменения для дочерних объектов
+    private  List<Note> noteList;
 
     public Topic() {
     }
